@@ -3,12 +3,15 @@ import { checkBrainrotModel } from './model';
 import './styles.css';
 import "./styles2.scss";
 
+import "./styles.css";
+import html2canvas from "html2canvas";
+import { checkBrainrotModel } from "./model";
+import "./styles2.css";
+import { create } from "domain";
 
-const blockedUrls = [
-    'youtube.com',
-    'facebook.com',
-    'twitter.com'
-];
+
+
+const blockedUrls = ["youtube.com", "facebook.com", "twitter.com"];
 
 const timeout = 5; // 5 seconds
 
@@ -40,6 +43,7 @@ function createGameContainer(overlay) {
     setTimeout(() => {
         button.removeEventListener("mouseover", (e) => { });
     }, 10000);
+
 
   button.addEventListener("click", () => {
     overlay.style.display = "none";
@@ -75,32 +79,39 @@ function createGameContainer(overlay) {
     button.classList.remove("unclickable--active");
     game.classList.remove("game--victory");
     const play = setInterval(updateOffset, getRandomIntInRange(500, 1500));
-    return play
+    return play;
   };
 
   resetGame();
   button.onclick = handleClick;
+
+
     setTimeout(() => {
         overlay.style.display = "block";
         createBlocker();
     }, timeout * 60 * 1000); // 5 minutes
   return wrapper;
+
 }
 
-function createBlocker() {
+function brainrotBlocker() {
   const overlay = document.createElement("div");
   overlay.className = "overlay";
 
   const message = document.createElement("div");
   message.className = "message";
+
   message.textContent =
     "🚨🚨Detected Distractions!!🚨🚨 You have been blocked from this site.";
 
-  const gameContainer = createGameContainer(overlay);
+
+  const audioTracks =
+    document.querySelectorAll<HTMLMediaElement>("audio, video");
+  audioTracks.forEach((track) => {
+    track.pause();
+  });
 
   overlay.appendChild(message);
-    overlay.appendChild(gameContainer);
-    
   document.body.appendChild(overlay);
 }
 
@@ -169,8 +180,62 @@ function checkUrlAndBlock() {
 }
 
 // Wait for the page to load
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkUrlAndBlock);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", checkUrlAndBlock);
 } else {
-    checkUrlAndBlock();
+  checkUrlAndBlock();
 }
+
+async function recordAudio(): Promise<void> {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100,
+      },
+    });
+
+    const options = { mimeType: "audio/webm" };
+    const mediaRecorder = new MediaRecorder(stream, options);
+    const audioChunks: Blob[] = [];
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunks.push(event.data);
+      }
+    };
+
+    mediaRecorder.onstop = () => {
+      const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const link = document.createElement("a");
+      link.href = audioUrl;
+      link.download = `recording-${Date.now()}.webm`;
+      link.click();
+
+      // Cleanup
+      URL.revokeObjectURL(audioUrl);
+      stream.getTracks().forEach((track) => track.stop());
+    };
+
+    // Start recording and trigger dataavailable every 100ms
+    mediaRecorder.start(100);
+    console.log("Recording started...");
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+          console.log("Recording stopped...");
+        }
+        resolve();
+      }, 5000);
+    });
+  } catch (error) {
+    console.error("Error recording audio:", error);
+    throw error;
+  }
+}
+
+recordAudio();
