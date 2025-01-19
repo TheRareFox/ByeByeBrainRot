@@ -1,14 +1,8 @@
-import html2canvas from 'html2canvas';
-import { checkBrainrotModel } from './model';
 import './styles.css';
 import "./styles2.scss";
-
-import "./styles.css";
 import html2canvas from "html2canvas";
 import { checkBrainrotModel } from "./model";
-import "./styles2.css";
 import { create } from "domain";
-
 
 
 const blockedUrls = ["youtube.com", "facebook.com", "twitter.com"];
@@ -92,27 +86,6 @@ function createGameContainer(overlay) {
     }, timeout * 60 * 1000); // 5 minutes
   return wrapper;
 
-}
-
-function brainrotBlocker() {
-  const overlay = document.createElement("div");
-  overlay.className = "overlay";
-
-  const message = document.createElement("div");
-  message.className = "message";
-
-  message.textContent =
-    "🚨🚨Detected Distractions!!🚨🚨 You have been blocked from this site.";
-
-
-  const audioTracks =
-    document.querySelectorAll<HTMLMediaElement>("audio, video");
-  audioTracks.forEach((track) => {
-    track.pause();
-  });
-
-  overlay.appendChild(message);
-  document.body.appendChild(overlay);
 }
 
 function brainrotBlocker() {
