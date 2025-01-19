@@ -10,6 +10,7 @@ dist/
 # OS/IDE-specific files
 .DS_Store
 .vscode/
+.idea/
 
 **/venv/
 **/__pycache__/

@@ -3,6 +3,7 @@ import "./styles2.scss";
 import html2canvas from "html2canvas";
 import { checkBrainrotModel } from "./model";
 import { create } from "domain";
+import { simpleSpeech } from "../challenges/simpleSpeech";
 
 
 const blockedUrls = ["youtube.com", "facebook.com", "twitter.com"];
@@ -127,6 +128,28 @@ function brainrotBlocker() {
         repeatMessages.push(repeatMessage);
     }
 
+}
+
+function createBlocker() {
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+
+    const message = document.createElement('div');
+    message.className = 'message';
+    message.textContent = '🚨🚨Detected Brainrot!🚨🚨 You have been blocked from this site.';
+
+    const button = document.createElement('button');
+    button.className = 'button';
+    button.textContent = `I want brainrot for ${timeout} seconds!`;
+    button.addEventListener('click', () => {
+        overlay.replaceChildren();
+        overlay.appendChild(simpleSpeech(() => {
+            overlay.style.display = 'none';
+            setTimeout(() => {
+                overlay.style.display = 'flex';
+            }, timeout * 1000);
+        }));
+    });
 }
 
 function checkUrlAndBlock() {
