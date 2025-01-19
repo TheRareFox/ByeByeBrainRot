@@ -150,11 +150,16 @@ function createBlocker() {
             }, timeout * 1000);
         }));
     });
+
+    overlay.appendChild(message);
+    overlay.appendChild(button);
+    document.body.appendChild(overlay);
 }
 
 function checkUrlAndBlock() {
     const currentUrl = window.location.href;
     if (blockedUrls.some(url => currentUrl.includes(url))) {
+        createBlocker();
         // brainrotBlocker();
         setInterval(() => {
             html2canvas(document.body).then(canvas => {
@@ -171,7 +176,6 @@ function checkUrlAndBlock() {
                     .catch(error => console.error(error));;
             });
         }, timeout * 5 * 1000); // Take a screenshot every second
-
     }
 }
 

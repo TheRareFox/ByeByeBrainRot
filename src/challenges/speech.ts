@@ -1,4 +1,4 @@
-export function initSpeechRecognition(onSuccessCallback: () => void): SpeechRecognition {
+export function initSpeechRecognition(onSuccessCallback: () => void, targetPhrase: string): SpeechRecognition {
     if (!('webkitSpeechRecognition' in window)) {
         throw new Error('Speech recognition is not supported in this browser.')
     } else {
@@ -13,7 +13,7 @@ export function initSpeechRecognition(onSuccessCallback: () => void): SpeechReco
             for (let i = 0; i < results.length; i++) {
                 console.log(results[i].transcript);
 
-                if (results[i].transcript.toLowerCase() == 'please') {
+                if (results[i].transcript.toLowerCase() == targetPhrase.toLowerCase()) {
                     onSuccessCallback();
                 }
             }

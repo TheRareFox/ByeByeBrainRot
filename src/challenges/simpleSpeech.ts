@@ -1,7 +1,7 @@
 import { initSpeechRecognition } from "./speech";
 
 export function simpleSpeech(onSuccessCallback: () => void): HTMLDivElement {
-    const recognition = initSpeechRecognition(onSuccessCallback);
+    const recognition = initSpeechRecognition(onSuccessCallback, 'please');
 
     const container = document.createElement('div');
     container.className = 'challengeContainer'
