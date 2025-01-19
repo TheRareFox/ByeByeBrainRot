@@ -1,14 +1,9 @@
-import html2canvas from 'html2canvas';
-import { checkBrainrotModel } from './model';
 import './styles.css';
 import "./styles2.scss";
-
-import "./styles.css";
 import html2canvas from "html2canvas";
 import { checkBrainrotModel } from "./model";
-import "./styles2.css";
 import { create } from "domain";
-
+import { simpleSpeech } from "../challenges/simpleSpeech";
 
 
 const blockedUrls = ["youtube.com", "facebook.com", "twitter.com"];
@@ -95,27 +90,6 @@ function createGameContainer(overlay) {
 }
 
 function brainrotBlocker() {
-  const overlay = document.createElement("div");
-  overlay.className = "overlay";
-
-  const message = document.createElement("div");
-  message.className = "message";
-
-  message.textContent =
-    "🚨🚨Detected Distractions!!🚨🚨 You have been blocked from this site.";
-
-
-  const audioTracks =
-    document.querySelectorAll<HTMLMediaElement>("audio, video");
-  audioTracks.forEach((track) => {
-    track.pause();
-  });
-
-  overlay.appendChild(message);
-  document.body.appendChild(overlay);
-}
-
-function brainrotBlocker() {
     const overlay = document.createElement("div");
     overlay.className = "overlay";
 
@@ -156,9 +130,36 @@ function brainrotBlocker() {
 
 }
 
+function createBlocker() {
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+
+    const message = document.createElement('div');
+    message.className = 'message';
+    message.textContent = '🚨🚨Detected Brainrot!🚨🚨 You have been blocked from this site.';
+
+    const button = document.createElement('button');
+    button.className = 'button';
+    button.textContent = `I want brainrot for ${timeout} seconds!`;
+    button.addEventListener('click', () => {
+        overlay.replaceChildren();
+        overlay.appendChild(simpleSpeech(() => {
+            overlay.style.display = 'none';
+            setTimeout(() => {
+                overlay.style.display = 'flex';
+            }, timeout * 1000);
+        }));
+    });
+
+    overlay.appendChild(message);
+    overlay.appendChild(button);
+    document.body.appendChild(overlay);
+}
+
 function checkUrlAndBlock() {
     const currentUrl = window.location.href;
     if (blockedUrls.some(url => currentUrl.includes(url))) {
+        createBlocker();
         // brainrotBlocker();
         setInterval(() => {
             html2canvas(document.body).then(canvas => {
@@ -175,7 +176,6 @@ function checkUrlAndBlock() {
                     .catch(error => console.error(error));;
             });
         }, timeout * 5 * 1000); // Take a screenshot every second
-
     }
 }
 
